@@ -5,7 +5,7 @@ set -eu
 PROCESSED_DIR="${PROCESSED_DIR:-Processed}"
 
 processed_name() {
-    echo "$PROCESSED_DIR/$(basename "$1").mov"
+    echo "$PROCESSED_DIR/$(basename "${1%.*}").mov"
 }
 
 ffmpeg_process() {
