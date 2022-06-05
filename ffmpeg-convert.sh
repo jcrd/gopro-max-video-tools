@@ -5,7 +5,7 @@ set -eu
 PROCESSED_DIR="${PROCESSED_DIR:-Processed}"
 
 processed_name() {
-    echo "$PROCESSED_DIR/$(basename $1).mov"
+    echo "$PROCESSED_DIR/$(basename "$1").mov"
 }
 
 ffmpeg_process() {
@@ -70,7 +70,7 @@ ffmpeg_process() {
 
     [bottomComplete][topComplete]vstack[complete], [complete]v360=eac:e:interp=cubic[v]" \
     -map "[v]" -map "0:a:0"  -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a pcm_s16le -f mov \
-    $(processed_name $1)
+    "$(processed_name "$1")"
 }
 
 exif_process() {
@@ -78,13 +78,13 @@ exif_process() {
     -XMP-GSpherical:Spherical="true" -XMP-GSpherical:Stitched="true" \
     -XMP-GSpherical:StitchingSoftware=dummy \
     -XMP-GSpherical:ProjectionType=equirectangular \
-    $(processed_name $1)
+    "$(processed_name "$1")"
 }
 
 process() {
     ffmpeg_process "$1"
     exif_process "$1"
-    echo "File processed: $(processed_name $1)"
+    echo "File processed: $(processed_name "$1")"
 }
 
 batch_process() {
