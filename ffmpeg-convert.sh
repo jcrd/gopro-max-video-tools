@@ -69,7 +69,7 @@ ffmpeg_process() {
     [TopleftMiddle][ToprightBottomDone]hstack[topComplete],
 
     [bottomComplete][topComplete]vstack[complete], [complete]v360=eac:e:interp=cubic[v]" \
-    -map "[v]" -map "0:a:0"  -c:v dnxhd -profile:v dnxhr_hq -pix_fmt yuv422p -c:a pcm_s16le -f mov \
+    -map "[v]" -map "0:a:0"  -c:v dnxhd -profile:v dnxhr_$quality -pix_fmt yuv422p -c:a pcm_s16le -f mov \
     "$(processed_name "$1")"
 }
 
@@ -93,6 +93,33 @@ batch_process() {
         process "$f"
     done
 }
+
+prompt_quality() {
+    echo 'Choose a quality setting from the following:'
+    echo '(lb) Low bandwidth [default]'
+    echo '(sq) Standard quality'
+    echo '(hq) High quality'
+    echo '(hqx) Broadcast quality'
+    echo '(444) Finishing quality'
+
+    read -p 'Quality: ' quality
+
+    [ -z $quality ] && quality=lb
+
+    case "$quality" in
+        lb|sq|hq|hqx|444)
+            echo "Processing with '$quality' quality..."
+            return
+            ;;
+        *)
+            echo "Invalid quality setting: '$quality'" >&2
+            return 2
+    esac
+}
+
+until prompt_quality; do
+    :
+done
 
 if [ $# -gt 0 ]; then
     if [ -f "$1" ] && [ "${1##*.}" == "360" ]; then
